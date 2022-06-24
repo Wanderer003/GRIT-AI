@@ -1,0 +1,33 @@
+import MeCab
+from glob import glob
+import collections
+
+filepaths = glob('*.txt')
+filepath = filepaths[1]
+with open(filepath, 'r') as f:
+    txt = f.read()
+    
+tagger = MeCab.Tagger()
+parsed_txt = tagger.parse(txt)
+elements = parsed_txt.split('\n')[:-2]
+
+results = []
+
+for element in elements:
+    parts = element.split(',')
+    surface_pos, pos1, base = parts[0], parts[1], parts[-3]
+    surface, pos = surface_pos.split('\t')
+    results.append(dict(表層形=surface, 基本形=base, 品詞=pos, 品詞1=pos1))
+
+
+node = m.parseToNode(txt)
+words=[]
+while node:
+    hinshi = node.feature.split(",")[0]
+    if hinshi in ["名詞"]:
+        origin = node.feature.split(",")[6]
+        words.append(origin)
+    node = node.next
+    
+c = collections.Counter(words)
+print(c.most_common(20))
